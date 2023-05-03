@@ -19,6 +19,7 @@ function Chats() {
   useEffect(() => {
     fetchData();
   }, []);
+  console.log(chats);
   return (
     <Wrapper>
       {chats

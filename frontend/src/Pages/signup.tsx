@@ -3,6 +3,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
+export interface dataProps {
+  name: string;
+  email: string;
+  pw: string;
+}
 function SignUp() {
   const {
     register,
@@ -14,6 +19,18 @@ function SignUp() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          id="name"
+          {...register("name")}
+        />
+        <div id="emailHelp" className="form-text">
+          We'll never share your name with anyone else.
+        </div>
         <label htmlFor="exampleInputEmail1" className="form-label">
           Email address
         </label>
@@ -50,7 +67,7 @@ function SignUp() {
         </label>
       </div>
       <button type="submit" className="btn btn-primary">
-        Submit
+        Sign Up
       </button>
     </form>
   );
