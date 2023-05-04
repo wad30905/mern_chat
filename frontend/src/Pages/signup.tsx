@@ -2,11 +2,13 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { signUp } from "../api";
 
-export interface dataProps {
+export interface signUpProps {
   name: string;
   email: string;
   pw: string;
+  pic: string;
 }
 function SignUp() {
   const {
@@ -15,7 +17,9 @@ function SignUp() {
     watch,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: any) => {
+    signUp(data);
+  };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
@@ -28,7 +32,7 @@ function SignUp() {
           id="name"
           {...register("name")}
         />
-        <div id="emailHelp" className="form-text">
+        <div id="nameHelp" className="form-text">
           We'll never share your name with anyone else.
         </div>
         <label htmlFor="exampleInputEmail1" className="form-label">
@@ -55,6 +59,18 @@ function SignUp() {
           id="exampleInputPassword1"
           {...register("pw")}
         />
+      </div>
+      <label htmlFor="pic" className="form-label">
+        pic
+      </label>
+      <input
+        type="text"
+        className="form-control"
+        id="pic"
+        {...register("pic")}
+      />
+      <div id="picHelp" className="form-text">
+        We'll never share your pic with anyone else.
       </div>
       <div className="mb-3 form-check">
         <input

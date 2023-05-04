@@ -2,7 +2,12 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { logIn } from "../api";
 
+export interface logInProps {
+  email: string;
+  pw: string;
+}
 function LogIn() {
   const {
     register,
@@ -10,7 +15,9 @@ function LogIn() {
     watch,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: any) => {
+    logIn(data);
+  };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
