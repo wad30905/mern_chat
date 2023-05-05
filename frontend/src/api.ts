@@ -20,7 +20,6 @@ export const signUp = async ({ name, email, pw, pic }: signUpProps) => {
       pic,
     },
   });
-  console.log(response.data);
   return response;
 };
 
@@ -29,6 +28,5 @@ export const logIn = async ({ email, pw }: logInProps) => {
     email,
     password: pw,
   });
-  console.log(response);
   return response;
 };

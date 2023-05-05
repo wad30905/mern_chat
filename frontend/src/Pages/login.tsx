@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { logIn } from "../api";
+import { useNavigate } from "react-router-dom";
 
 export interface logInProps {
   email: string;
@@ -15,8 +16,15 @@ function LogIn() {
     watch,
     formState: { errors },
   } = useForm();
+  const navigate = useNavigate();
+  const logInSubmit = async (data: any) => {
+    const response = await logIn(data);
+    console.log(response.data);
+    localStorage.setItem("userInfo", JSON.stringify(response.data));
+    navigate("/chats");
+  };
   const onSubmit = (data: any) => {
-    logIn(data);
+    logInSubmit(data);
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

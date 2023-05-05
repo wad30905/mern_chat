@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { signUp } from "../api";
+import CloudinaryUploadWidget from "../Components/molecules/cloudinaryuploadwidget";
+import { useNavigate } from "react-router-dom";
 
 export interface signUpProps {
   name: string;
@@ -11,15 +13,35 @@ export interface signUpProps {
   pic: string;
 }
 function SignUp() {
+  const picRef = useRef<any>();
+  const navigate = useNavigate();
+  const [pic, setPic] = useState();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data: any) => {
-    signUp(data);
+
+  const signUpSubmit = async (data: any) => {
+    const response = await signUp(data);
+    console.log(response.data);
+    localStorage.setItem("userInfo", JSON.stringify(data));
+    navigate("/chats");
   };
+
+  const onSubmit = (data: any) => {
+    signUpSubmit(data);
+  };
+
+  console.log(pic);
+
+  useEffect(() => {
+    const picElement = document.getElementById("pic") as any;
+    if (picElement) {
+      picElement.value = pic;
+    }
+  }, [pic]);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
@@ -72,6 +94,29 @@ function SignUp() {
       <div id="picHelp" className="form-text">
         We'll never share your pic with anyone else.
       </div>
+      {/* upload to using cloudinary */}
+      <div className="App">
+        <h3>Cloudinary Upload Widget Example</h3>
+        <CloudinaryUploadWidget setPicFromParent={setPic} />
+        <p>
+          <a
+            href="https://cloudinary.com/documentation/upload_widget"
+            target="_blank"
+          >
+            Upload Widget User Guide
+          </a>
+        </p>
+        <p>
+          <a
+            href="https://cloudinary.com/documentation/upload_widget_reference"
+            target="_blank"
+          >
+            Upload Widget Reference
+          </a>
+        </p>
+        <img id="uploadedimage" src=""></img>
+      </div>
+      {/* upload to using cloudinary */}
       <div className="mb-3 form-check">
         <input
           type="checkbox"
