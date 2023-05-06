@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { signUp } from "../api";
 import CloudinaryUploadWidget from "../Components/molecules/cloudinaryuploadwidget";
 import { useNavigate } from "react-router-dom";
+import { user } from "../Store/atom";
+import { useRecoilState } from "recoil";
 
 export interface signUpProps {
   name: string;
@@ -13,7 +15,7 @@ export interface signUpProps {
   pic: string;
 }
 function SignUp() {
-  const picRef = useRef<any>();
+  const [userInfo, setUserInfo] = useRecoilState(user);
   const navigate = useNavigate();
   const [pic, setPic] = useState();
   const {
@@ -25,16 +27,15 @@ function SignUp() {
 
   const signUpSubmit = async (data: any) => {
     const response = await signUp(data);
-    console.log(response.data);
-    localStorage.setItem("userInfo", JSON.stringify(data));
+    console.log(response);
+    localStorage.setItem("userInfo", JSON.stringify(response));
+    setUserInfo(response);
     navigate("/chats");
   };
 
   const onSubmit = (data: any) => {
     signUpSubmit(data);
   };
-
-  console.log(pic);
 
   useEffect(() => {
     const picElement = document.getElementById("pic") as any;

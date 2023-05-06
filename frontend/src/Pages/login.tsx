@@ -4,12 +4,14 @@ import { Button } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { logIn } from "../api";
 import { useNavigate } from "react-router-dom";
-
+import { useRecoilState } from "recoil";
+import { user } from "../Store/atom";
 export interface logInProps {
   email: string;
   pw: string;
 }
 function LogIn() {
+  const [userInfo, setUserInfo] = useRecoilState(user);
   const {
     register,
     handleSubmit,
@@ -19,8 +21,8 @@ function LogIn() {
   const navigate = useNavigate();
   const logInSubmit = async (data: any) => {
     const response = await logIn(data);
-    console.log(response.data);
-    localStorage.setItem("userInfo", JSON.stringify(response.data));
+    localStorage.setItem("userInfo", JSON.stringify(response));
+    setUserInfo(response);
     navigate("/chats");
   };
   const onSubmit = (data: any) => {
