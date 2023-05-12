@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// --------------------------deployment------------------------------
+// --------------------------deployment------------------------------`
 
 // Error Handling middlewares
 app.use(notFound);
@@ -60,17 +60,27 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
+  console.log(socket.id);
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
+  });
+  socket.on("disconnect", () => {
+    console.log(socket.id, "is disconnected");
   });
 
   socket.on("join chat", (room) => {
     socket.join(room);
     console.log("User Joined Room: " + room);
   });
-  socket.on("typing", (room) => socket.in(room).emit("typing"));
-  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+  socket.on("typing", (room) => {
+    console.log("this is the ", room);
+    socket.in(room).emit("typing");
+  });
+  socket.on("stop typing", (room) => {
+    console.log("stopped");
+    socket.in(room).emit("stop typing");
+  });
 
   socket.on("new message", (newMessageRecieved) => {
     var chat = newMessageRecieved.chat;

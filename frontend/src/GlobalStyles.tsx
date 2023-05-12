@@ -48,4 +48,20 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+a {
+  text-decoration: none;
+}
+
+.topbar {
+	height: 50px;
+	background-color: white;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	transition: background-color 0.3s ease-in-out;
+}
+
+.topbar.scrolled {
+	background-color: #212121;
+}
 `;

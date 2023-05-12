@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { signUp } from "../api";
 import CloudinaryUploadWidget from "../Components/molecules/cloudinaryuploadwidget";
 import { useNavigate } from "react-router-dom";
-import { user } from "../Store/atom";
 import { useRecoilState } from "recoil";
+import { loggedInAtom, userState } from "../Store/atom";
 
 export interface signUpProps {
   name: string;
@@ -15,7 +15,8 @@ export interface signUpProps {
   pic: string;
 }
 function SignUp() {
-  const [userInfo, setUserInfo] = useRecoilState(user);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(loggedInAtom);
   const navigate = useNavigate();
   const [pic, setPic] = useState();
   const {
@@ -26,11 +27,15 @@ function SignUp() {
   } = useForm();
 
   const signUpSubmit = async (data: any) => {
-    const response = await signUp(data);
-    console.log(response);
-    localStorage.setItem("userInfo", JSON.stringify(response));
-    setUserInfo(response);
-    navigate("/chats");
+    try {
+      const response = await signUp(data);
+      localStorage.setItem("userInfo", JSON.stringify(response));
+      setUserInfo(response);
+      setIsLoggedIn(true);
+      navigate("/people");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onSubmit = (data: any) => {

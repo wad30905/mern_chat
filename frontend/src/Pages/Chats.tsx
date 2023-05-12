@@ -1,54 +1,69 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Button } from "react-bootstrap";
-import { allUser } from "../api";
-import { user } from "../Store/atom";
+import { Link, Outlet } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import User from "../Components/molecules/User";
+import styled from "styled-components";
+import { userState } from "../Store/atom";
 
-export const Wrapper = styled.div``;
-export const SearchBox = styled.input``;
-export const UsersWrapper = styled.div``;
+const Wrapper = styled.div`
+  width: 80vw;
+  height: 70vh;
+  display: flex;
+  border: 1px solid #111;
+  position: absolute;
+  justify-content: space-between;
+  top: 100px;
+  left: 150px;
+`;
+
+const ChatsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 function Chats() {
   const [chats, setChats] = useState<any>();
-  const [searchStr, setSearchStr] = useState<string>("");
-  const userInfo = useRecoilValue(user);
-  const [usersList, setUsersList] = useState<any>();
-  //fetch chat data api
-  const searchUser = async (searchStr: string) => {
-    const response = await allUser(searchStr, userInfo.token);
-    setUsersList(response);
+  const userInfo = useRecoilValue(userState);
+  const fetchChats = async () => {
+    // console.log(user._id);
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      const { data } = await axios.get("/api/chat", config);
+      setChats(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
+  console.log(chats);
 
   useEffect(() => {
-    searchUser(searchStr);
-  }, [searchStr]);
-
-  //fetch chat data
-  const onSearch = (e: any) => {
-    setSearchStr(e.target.value);
-  };
-
-  console.log("usersList", usersList);
+    fetchChats();
+    // eslint-disable-next-line
+  }, []);
   return (
     <Wrapper>
-      <SearchBox onChange={onSearch} />
-      {chats
-        ? chats.map((item: any, index: number) => (
-            <div key={index}>{item.chatName}</div>
-          ))
-        : null}
-      <Button />
-      <UsersWrapper>
-        {usersList
-          ? usersList.map((item: any, index: number) => (
-              <User key={index} {...item}></User>
+      <ChatsWrapper>
+        {chats
+          ? chats.map((item: any, index: number) => (
+              <Link
+                to={`${item._id}`}
+                state={item}
+                key={index}
+                style={{ display: "block" }}
+              >
+                {item.users[0].name !== userInfo.name
+                  ? item.users[0].name
+                  : item.users[1].name}
+              </Link>
             ))
           : null}
-      </UsersWrapper>
+      </ChatsWrapper>
+      <Outlet />
     </Wrapper>
   );
 }
-
 export default Chats;
