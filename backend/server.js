@@ -6,6 +6,8 @@ const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
+const cors = require("cors");
+const { resolve } = require("path");
 
 dotenv.config();
 connectDB();
@@ -17,6 +19,12 @@ app.use(express.json()); // to accept json data
 //   res.send("API Running!");
 // });
 
+let corsOptions = {
+  origin: "*", // 출처 허용 옵션
+  credential: true, // 사용자 인증이 필요한 리소스(쿠키 등) 접근
+};
+
+app.use(cors(corsOptions));
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
@@ -60,7 +68,6 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log("Connected to socket.io");
-  console.log(socket.id);
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connected");
@@ -74,7 +81,6 @@ io.on("connection", (socket) => {
     console.log("User Joined Room: " + room);
   });
   socket.on("typing", (room) => {
-    console.log("this is the ", room);
     socket.in(room).emit("typing");
   });
   socket.on("stop typing", (room) => {
@@ -99,3 +105,23 @@ io.on("connection", (socket) => {
     socket.leave(userData._id);
   });
 });
+
+const condition = false;
+const promise = new Promise((resolve, reject) => {
+  if (condition) {
+    resolve("성공");
+  } else {
+    reject("실패");
+  }
+});
+
+promise
+  .then((message) => {
+    console.log(message);
+  })
+  .catch((error) => {
+    console.log(error);
+  })
+  .finally(() => {
+    console.log("무조건");
+  });
