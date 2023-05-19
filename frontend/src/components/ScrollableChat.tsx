@@ -2,13 +2,13 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import ScrollableFeed from "react-scrollable-feed";
 import { useRecoilValue } from "recoil";
-import { userState } from "../../Store/atom";
 import {
   isLastMessage,
   isSameSender,
   isSameSenderMargin,
   isSameUser,
-} from "./ChatLogics";
+} from "../config/ChagLogics";
+import { userState } from "../Store/atom";
 
 const ScrollableChat = ({ messages }: any) => {
   const userInfo = useRecoilValue(userState);

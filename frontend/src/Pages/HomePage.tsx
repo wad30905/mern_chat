@@ -1,30 +1,60 @@
-import React, { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import styled from "styled-components";
-import TopBar from "../Components/molecules/TopBar";
+import {
+  Box,
+  Container,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import Login from "../components/Authentication/Login";
+import Signup from "../components/Authentication/Signup";
+import { userState } from "../Store/atom";
+function Homepage() {
+  const navigate = useNavigate();
+  const userInfo = useRecoilValue(userState);
+  useEffect(() => {
+    if (userInfo) navigate("/chats");
+  }, []);
 
-export const Container = styled.div`
-  width: 100vw;
-  height: 3000px;
-`;
-function HomePage() {
   return (
-    <Container id="content">
-      <TopBar />
-      <div
-        style={{
-          display: "flex",
-          height: "90%",
-          width: "100%",
-          position: "absolute",
-          top: "7vh",
-        }}
+    <Container maxW="xl" centerContent>
+      <Box
+        display="flex"
+        justifyContent="center"
+        p={3}
+        bg="white"
+        w="100%"
+        m="40px 0 15px 0"
+        borderRadius="lg"
+        borderWidth="1px"
       >
-        <Outlet />
-      </div>
+        <Text fontSize="4xl" fontFamily="Work sans">
+          Homebrew
+        </Text>
+      </Box>
+      <Box bg="white" w="100%" p={4} borderRadius="lg" borderWidth="1px">
+        <Tabs isFitted variant="soft-rounded">
+          <TabList mb="1em">
+            <Tab>Login</Tab>
+            <Tab>Sign Up</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <Login />
+            </TabPanel>
+            <TabPanel>
+              <Signup />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
     </Container>
   );
 }
 
-export default HomePage;
+export default Homepage;
