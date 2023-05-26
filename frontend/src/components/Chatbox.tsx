@@ -1,25 +1,23 @@
-import { Box } from "@chakra-ui/layout";
-import "./styles.css";
 import SingleChat from "./SingleChat";
-import { useRecoilValue } from "recoil";
-import { selectedChatState } from "../Store/atom";
+import styled from "styled-components";
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  width: 40vw;
+  margin-top: 5vh;
+  border: 1px solid #fffe;
+  border-radius: 20px;
+  background: white;
+  justify-content: space-around;
+  align-items: center;
+`;
 const Chatbox = ({ fetchAgain, setFetchAgain }: any) => {
-  const selectedChat = useRecoilValue(selectedChatState);
-
   return (
-    <Box
-      display={{ base: selectedChat ? "flex" : "none", md: "flex" }}
-      alignItems="center"
-      flexDir="column"
-      p={3}
-      bg="white"
-      w={{ base: "100%", md: "68%" }}
-      borderRadius="lg"
-      borderWidth="1px"
-    >
+    <Wrapper>
       <SingleChat fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
-    </Box>
+    </Wrapper>
   );
 };
 

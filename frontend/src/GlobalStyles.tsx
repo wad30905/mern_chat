@@ -30,6 +30,9 @@ footer, header, hgroup, main, menu, nav, section {
 *[hidden] {
     display: none;
 }
+* {
+  box-sizing: border-box;
+}
 body {
   line-height: 1;
 }
@@ -52,16 +55,53 @@ a {
   text-decoration: none;
 }
 
-.topbar {
-	height: 50px;
-	background-color: white;
-	position: fixed;
-	top: 0;
-	width: 100%;
-	transition: background-color 0.3s ease-in-out;
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 30px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-.topbar.scrolled {
-	background-color: #212121;
+.search-box input[type="text"] {
+  border: none;
+  flex: 1;
+  margin-right: 10px;
+  font-size: 16px;
+  color: #333;
+  outline: none;
+}
+
+.search-box button {
+  border: none;
+  background-color: #f7941e;
+  color: #fff;
+  border-radius: 50%;
+  padding: 10px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.search-box button[type="submit"]:hover {
+  background-color: #e67e22;
+}
+
+
+
+.topbar {
+  width: 100vw;
+  height: 7vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.5s ease;
 }
 `;

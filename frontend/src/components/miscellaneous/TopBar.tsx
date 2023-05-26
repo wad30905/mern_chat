@@ -1,7 +1,7 @@
-import { Button } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
-import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
+import { GiBeerStein } from "react-icons/gi";
+import { GoSearch } from "react-icons/go";
+
+import { AiOutlineSearch } from "react-icons/ai";
 import {
   Menu,
   MenuButton,
@@ -9,22 +9,13 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/menu";
-import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-} from "@chakra-ui/modal";
-import { Tooltip } from "@chakra-ui/tooltip";
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "../ChatLoading";
-import ProfileModal from "./ProfileModal";
+import ProfileModal, { ModalOverlay } from "./ProfileModal";
 import { getSender } from "../../config/ChagLogics";
 import UserListItem from "../userAvatar/UserListItem";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -34,7 +25,53 @@ import {
   selectedChatState,
   userState,
 } from "../../Store/atom";
-function SideDrawer() {
+import styled from "styled-components";
+import { MdNotifications } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { background, Button } from "@chakra-ui/react";
+const Logo = styled.div`
+  color: inherit;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px;
+  cursor: pointer;
+  background-color: inherit;
+`;
+const H1 = styled.h1`
+  color: inherit;
+  display: block;
+  font-size: 30px;
+  font-family: "Lilita One", cursive;
+  margin: 10px;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  align-items: "center";
+`;
+
+const ModalContent = styled.div`
+  z-index: 20000000;
+  background: black;
+  width: 40vw;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+export const Buttons = styled.div`
+  border-radius: 10px;
+  height: 90%;
+  width: 15vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: #f5bf19;
+`;
+function TopBar() {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -44,12 +81,11 @@ function SideDrawer() {
   const [notification, setNotification] = useRecoilState(notificationState);
   const [chats, setChats] = useRecoilState(chatsState);
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
-    navigate("/");
+    navigate("/auth");
   };
 
   const handleSearch = async () => {
@@ -106,7 +142,7 @@ function SideDrawer() {
         setChats([data, ...chats]);
       setSelectedChat(data);
       setLoadingChat(false);
-      onClose();
+      setSearchModalOpen(false);
     } catch (error: any) {
       toast({
         title: "Error fetching the chat",
@@ -119,32 +155,78 @@ function SideDrawer() {
     }
   };
   console.log(notification);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const onSearchModalOpen = () => {
+    setSearchModalOpen(true);
+  };
+  const onSearchOverlayClick = () => {
+    setSearchModalOpen(false);
+  };
+  const onSearchContent = (e: any) => {
+    e.stopPropagation();
+  };
+
+  const onSearchInput = (e: any) => {
+    setSearch(e.target.value);
+  };
   return (
-    <>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        bg="white"
-        w="100%"
-        p="5px 10px 5px 10px"
-        borderWidth="5px"
+    <Wrapper className="topbar">
+      <Logo
+        onClick={() => {
+          navigate("/");
+        }}
       >
-        <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-          <Button variant="ghost" onClick={onOpen}>
-            <i className="fas fa-search"></i>
-            <Text display={{ base: "none", md: "flex" }} px={4}>
-              Search User
-            </Text>
-          </Button>
-        </Tooltip>
-        <Text fontSize="2xl" fontFamily="Work sans">
-          Homebrew
-        </Text>
-        <div>
+        <GiBeerStein size={32} style={{ color: "inherit" }} />
+        <H1>Homebrew</H1>
+      </Logo>
+      <Buttons>
+        <button
+          onClick={onSearchModalOpen}
+          style={{ background: "none", border: "none" }}
+        >
+          <AiOutlineSearch size={32} color="black" />
+        </button>
+        {searchModalOpen ? (
+          <ModalOverlay onClick={onSearchOverlayClick}>
+            <ModalContent onClick={onSearchContent}>
+              <div className="search-box" style={{ width: "80%" }}>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  onChange={onSearchInput}
+                  value={search}
+                />
+                <button onClick={handleSearch}>
+                  <GoSearch />
+                </button>
+              </div>
+              {loading ? (
+                <h1>sadf</h1>
+              ) : (
+                searchResult?.map((user: any) => (
+                  <UserListItem
+                    key={user._id}
+                    user={user}
+                    handleFunction={() => accessChat(user._id)}
+                  />
+                ))
+              )}
+              {loadingChat && <div>loading</div>}
+            </ModalContent>
+          </ModalOverlay>
+        ) : null}
+        <div style={{ display: "flex", alignItems: "center" }}>
           <Menu>
-            <MenuButton p={1}>
-              <BellIcon fontSize="2xl" m={1} />
+            <MenuButton
+              p={1}
+              style={{
+                background: "none",
+                border: "none",
+                width: "3vw",
+                height: "3vw",
+              }}
+            >
+              <MdNotifications size={32} color="black" />
             </MenuButton>
             <MenuList pl={2}>
               {!notification.length && "No New Messages"}
@@ -171,13 +253,8 @@ function SideDrawer() {
             </MenuList>
           </Menu>
           <Menu>
-            <MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
-              <Avatar
-                size="sm"
-                cursor="pointer"
-                name={userInfo.name}
-                src={userInfo.pic}
-              />
+            <MenuButton as={Button} bg="black" rightIcon={<ChevronDownIcon />}>
+              <img src={userInfo.pic} />
             </MenuButton>
             <MenuList>
               <ProfileModal user={userInfo}>
@@ -188,39 +265,9 @@ function SideDrawer() {
             </MenuList>
           </Menu>
         </div>
-      </Box>
-
-      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
-          <DrawerBody>
-            <Box display="flex" pb={2}>
-              <Input
-                placeholder="Search by name or email"
-                mr={2}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <Button onClick={handleSearch}>Go</Button>
-            </Box>
-            {loading ? (
-              <ChatLoading />
-            ) : (
-              searchResult?.map((user: any) => (
-                <UserListItem
-                  key={user._id}
-                  user={user}
-                  handleFunction={() => accessChat(user._id)}
-                />
-              ))
-            )}
-            {loadingChat && <div>loading</div>}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-    </>
+      </Buttons>
+    </Wrapper>
   );
 }
 
-export default SideDrawer;
+export default TopBar;

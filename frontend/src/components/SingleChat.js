@@ -1,21 +1,30 @@
-import { FormControl } from "@chakra-ui/form-control";
-import { Box, Text } from "@chakra-ui/layout";
-import "./styles.css";
-import { IconButton, Spinner, useToast } from "@chakra-ui/react";
+import { Spinner, useToast } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../config/ChagLogics";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { AiOutlineSearch } from "react-icons/ai";
+import { RiSendPlane2Fill } from "react-icons/ri";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
-
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { notificationState, selectedChatState, userState } from "../Store/atom";
+import styled from "styled-components";
 const ENDPOINT = "http://localhost:8000";
 var socket, selectedChatCompare;
 
+const Button = styled.button`
+  border: none;
+  background: #f5bf19;
+  border-radius: 10px;
+  width: 3vw;
+  height: 3vw;
+  font-weight: bold;
+  font-size: 20px;
+  margin: 10px;
+`;
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -150,32 +159,50 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   return (
-    <div style={{ background: "yellow" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        width: "100%",
+        justifyContent: "space-between",
+        position: "relative",
+      }}
+    >
       {selectedChat ? (
-        <>
-          <Text
-            fontSize={{ base: "28px", md: "30px" }}
-            pb={3}
-            px={2}
-            w="100%"
-            fontFamily="Work sans"
-            d="flex"
-            justifyContent={{ base: "space-between" }}
-            alignItems="center"
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            <IconButton
-              d={{ base: "flex", md: "none" }}
-              icon={<ArrowBackIcon />}
+            <Button
               onClick={() => setSelectedChat("")}
-            />
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ArrowBackIcon />
+            </Button>
             {messages &&
               (!selectedChat.isGroupChat ? (
-                <>
-                  {getSender(userInfo, selectedChat.users)}
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <ProfileModal
                     user={getSenderFull(userInfo, selectedChat.users)}
                   />
-                </>
+                  {getSender(userInfo, selectedChat.users)}
+                </div>
               ) : (
                 <>
                   {selectedChat.chatName.toUpperCase()}
@@ -186,17 +213,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   />
                 </>
               ))}
-          </Text>
-          <Box
-            d="flex"
-            flexDir="column"
-            justifyContent="flex-end"
-            p={3}
-            bg="#E8E8E8"
-            w="100%"
-            h="100%"
-            borderRadius="lg"
-            overflowY="hidden"
+            <Button>
+              <AiOutlineSearch />
+            </Button>
+          </div>
+          <div
+            style={{ overflow: "scroll", height: "70vh", background: "white" }}
           >
             {loading ? (
               <Spinner
@@ -207,32 +229,46 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin="auto"
               />
             ) : (
-              <div className="messages">
-                <ScrollableChat messages={messages} />
-              </div>
+              <ScrollableChat messages={messages} />
             )}
-
-            <FormControl
-              onKeyDown={sendMessage}
-              id="first-name"
-              isRequired
-              mt={3}
-            >
-              {istyping ? (
-                <div>
-                  <h1>he's typing</h1>
-                </div>
-              ) : null}
-              <input onChange={typingHandler} />
-            </FormControl>
-          </Box>
-        </>
+          </div>
+          <form
+            onKeyDown={sendMessage}
+            id="first-name"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {istyping ? (
+              <div>
+                <h1>he's typing</h1>
+              </div>
+            ) : null}
+            <div className="search-box" style={{ width: "80%" }}>
+              <input
+                type="text"
+                placeholder="입력..."
+                onChange={typingHandler}
+              />
+              <button>
+                <RiSendPlane2Fill />
+              </button>
+            </div>
+          </form>
+        </div>
       ) : (
         // to get socket.io on same page
-        <div style={{ background: "blue" }}>
-          <Text fontSize="3xl" pb={3} fontFamily="Work sans">
-            Click on a user to start chatting
-          </Text>
+        <div
+          style={{
+            background: "#F5BF19",
+          }}
+        >
+          <h1>Click on a user to start chatting</h1>
         </div>
       )}
     </div>
